@@ -2,26 +2,26 @@
 
 namespace App\Http\Livewire;
 
+use App\Comment as AppComment;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class Comment extends Component
 {
+    public $comments;
+
     public $newComment;
 
-    public function mount($comments)
+    public function mount()
     {
-        dd($comments);
-        $this->newComment = $comments;
+        $initialcomments = AppComment::latest()->get();
+        $this->comments = $initialcomments;
     }
 
-    public $comments = [
-        [
-            'body' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley',
-            'created_at' => '3 mins ago',
-            'creator' => 'Austin Stan'
-        ]
-    ];
+    public function updated($field)
+    {
+        $this->validateOnly($field, ['newComment' => 'required | max:10']);
+    }
 
     public function render()
     {
@@ -30,15 +30,17 @@ class Comment extends Component
 
     public function addComment()
     {
-        if ($this->newComment == '') {
-            return;
-        }
-        array_unshift($this->comments, [
-            'body' => $this->newComment,
-            'created_at' => Carbon::now()->diffForHumans(),
-            'creator' => 'James Bond',
+        $this->validate([
+            'newComment' => 'required'
         ]);
 
-        // $this->comments = "";
+        $createdComment = AppComment::create([
+            'body' => $this->newComment,
+            'user_id' => 1,
+        ]);
+
+        $this->comments->push($createdComment);
+
+        $this->newComment = "";
     }
 }
