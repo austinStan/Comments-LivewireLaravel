@@ -17,7 +17,9 @@
         <p class="font-bold text-lg">{{ $comment->creator->name}}</p>
         <p class="font-bold text-lg">{{ $comment->created_at->diffForHumans() }}</p>
         <textarea class="border-2 mt-3 py-8 px-20">{{ $comment->body}}</textarea>
-    </div>
-    @endforeach
 
+    </div>
+    <button wire:click="remove({{ $comment->id }})"
+        class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 mt-3 rounded">DELETE</button>
+    @endforeach
 </div>
